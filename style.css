@@ -1,0 +1,12 @@
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    canvas { 
+       /*border: 1px solid green;  */
+      background: none;
+      z-index: 0;
+      position: fixed;
+    }
