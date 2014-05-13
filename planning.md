@@ -1,7 +1,7 @@
 ## Goals for project
 
 - coffee script proficiency
-- framework for "chapter" progression which allows workflow change based on game outcome 
+- framework for "chapter" progression which allows workflow change based on game outcome or menu action  
 - playable level with tower placement via mouse, creep movement, scoring
 
 Stretch goals
