@@ -9,8 +9,10 @@ INTERVAL = 1000 / FRAMERATE
 
 canvasEdgeX = $(window).width();
 canvasEdgeY = $(window).height();
-levelOver = false 
+
 gameLoopCounter = 0 
+currentLevel = 0
+levelOver = false 
 
 # UI elements 
 menuCode = 
@@ -43,24 +45,14 @@ setSizes = () ->
 
 # game loop control
 
-loopId = => setInterval (
-	gameLoop
-), INTERVAL 
+# loopId = => setInterval (
+# 	gameLoop
+# ), INTERVAL 
 # Can't seem to get a handle to clearInterval with using CoffeeScript
 
 startLoop = () -> 
 	console.log("startLoop runs")
-	loopId()
-
-gameLoop = () -> 
-
-	if levelOver == false
-		gameLoopCounter += 1 # gameloop counter increments only when level is active
-		console.log("gameLoop is active")
-		console.log("gameLoopCounter =", gameLoopCounter)
-		draw()
-		levelOver = true if gameLoopCounter >= 3
-		endGame() if levelOver == true
+	setInterval (gameLoop), INTERVAL 
 
 endGame = () -> 
 	console.log("endGame runs")
@@ -79,13 +71,26 @@ runLevel = (levelName) ->
 	removeMenus()
 	startLoop() if levelOver == false #prevents duplicate loops
 	levelOver = false
-	# startGame(levelName)
-	 
+	currentLevel = levelName
+	
+#game levels
+
+gameLoop = () -> 
+
+	if currentLevel == 100 && levelOver == false
+		console.log("level 100 bizness logics, yo")
+
+	if levelOver == false
+		gameLoopCounter += 1 # gameloop counter increments only when level is active
+		console.log("gameLoop is active")
+		console.log("gameLoopCounter =", gameLoopCounter)
+		draw()
+		levelOver = true if gameLoopCounter >= 3
+		endGame() if levelOver == true
+
 # frame drawing functions 
 draw = () ->
 	console.log("draw runs")
-
-
 
 
 # create menu on jQuery document ready 
