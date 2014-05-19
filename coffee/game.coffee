@@ -3,19 +3,75 @@
 # "global" values
 canvasEdgeX = $(window).width();
 canvasEdgeY = $(window).height();
+frameRate = 1 # frames per second 
+interval = 1000 / frameRate
+levelOver = false 
+gameLoopCounter = 0 
+
+
+#UI elements 
+menuCode = 
+	"<div id='startMenu'>
+	<p>Hello game, this is game.</p>
+	<a href='#' class='menuLinkOne'>Start level one.</a>
+	</div>
+	"
+
 
 # resize #canvas to window
 setSizes = () -> 
-	canvasEdgeX = $(window).width(); 
-	canvasEdgeY = $(window).height(); 
-	canvas.width = canvasEdgeX;
-	canvas.height = canvasEdgeY;
+	console.log("setSizes runs")
+	canvasEdgeX = $(window).width() 
+	canvasEdgeY = $(window).height() 
+	canvas.width = canvasEdgeX
+	canvas.height = canvasEdgeY
+
+removeMenus = () -> 
+	console.log("removeMenus runs")
+	$("#startMenu").remove()
+
+startLoop = () -> 
+	console.log("startLoop runs")
+	console.log("levelOver =", levelOver)
+	loopId = () -> setInterval gameLoop interval 
+	loopId()
+
+gameLoop = () -> 
+	console.log("gameLoop runs")
+	console.log("levelOver =", levelOver)
+	endGame() if levelOver == true
+	console.log("levelOver =", levelOver)
+	gameLoopCounter += 1 
+	console.log("gameLoopCounter =", gameLoopCounter)
+
+endGame = () -> 
+	console.log("endGame runs")
+	clearInterval(loopId)
+	$('#menu').append -> 
+		menuCode  
+
+runLevel = (levelName) -> 
+	console.log("runLevel runs")
+	removeMenus()
+	startLoop()
+	# startGame(levelName)
+	 
+
+
 
 # create canvas
 jQuery -> 
-	canvas = document.getElementById("canvas");
+	canvas = document.getElementById("canvas")
 	setSizes()
-	
+
+	$('#menu').append -> 
+		menuCode  
+
+	$('.menuLinkOne').on 'click' , -> 
+		runLevel(100)
+
+
+
 
 
 
