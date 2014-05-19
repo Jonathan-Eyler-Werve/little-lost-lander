@@ -1,20 +1,23 @@
 # THIS SCRIPT INCLUDED WHEN game.html LOADS. 
 
+############################################################
 # "global" configuration constants
 
 FRAMERATE = 1 # frames per second 
 INTERVAL = 1000 / FRAMERATE
 
+############################################################
 # "global" game state
 
 canvasEdgeX = $(window).width();
 canvasEdgeY = $(window).height();
-
 gameLoopCounter = 0 
 currentLevel = 0
 levelOver = false 
 
+############################################################
 # UI elements 
+
 menuCode = 
 	"<div id='startMenu'>
 	<p>Hello game, this is game.</p>
@@ -35,7 +38,9 @@ addMenus = () ->
 		$('.menuLinkOne').on 'click' , -> 
 			runLevel(100)
 
+############################################################
 # resize #canvas to window
+
 setSizes = () -> 
 	console.log("setSizes runs")
 	canvasEdgeX = $(window).width() 
@@ -43,12 +48,8 @@ setSizes = () ->
 	canvas.width = canvasEdgeX
 	canvas.height = canvasEdgeY
 
+############################################################
 # game loop control
-
-# loopId = => setInterval (
-# 	gameLoop
-# ), INTERVAL 
-# Can't seem to get a handle to clearInterval with using CoffeeScript
 
 startLoop = () -> 
 	console.log("startLoop runs")
@@ -72,7 +73,8 @@ runLevel = (levelName) ->
 	startLoop() if levelOver == false #prevents duplicate loops
 	levelOver = false
 	currentLevel = levelName
-	
+
+############################################################	
 #game levels
 
 gameLoop = () -> 
@@ -88,38 +90,17 @@ gameLoop = () ->
 		levelOver = true if gameLoopCounter >= 3
 		endGame() if levelOver == true
 
-# frame drawing functions 
+############################################################
+# drawing functions 
+
 draw = () ->
 	console.log("draw runs")
 
+############################################################
+# start game on jQuery document.ready 
 
-# create menu on jQuery document ready 
 jQuery -> 
 	setSizes()
 	addMenus()
-
-
-
-
-
-
-
-
-
-# view menu
-
-# on menu click 
-# run chapter 
-# hide menus
-
-# to run chapter... 
-# create canvas
-# create containers 
-# create starting UI 
-# run game loop 
-# do things 
-# end game loop
-# add menus 
-
 
 
