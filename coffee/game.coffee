@@ -1,21 +1,37 @@
-# THIS SCRIPT IS RUN WHEN game.html LOADS. 
+# THIS SCRIPT INCLUDED WHEN game.html LOADS. 
 
-# "global" values
+# "global" configuration constants
+
+FRAMERATE = 1 # frames per second 
+INTERVAL = 1000 / FRAMERATE
+
+# "global" game state
+
 canvasEdgeX = $(window).width();
 canvasEdgeY = $(window).height();
-frameRate = 1 # frames per second 
-interval = 1000 / frameRate
 levelOver = false 
 gameLoopCounter = 0 
 
-
-#UI elements 
+# UI elements 
 menuCode = 
 	"<div id='startMenu'>
 	<p>Hello game, this is game.</p>
 	<a href='#' class='menuLinkOne'>Start level one.</a>
 	</div>
 	"
+
+removeMenus = () -> 
+	console.log("removeMenus runs")
+	console.log("removeMenus warning: no #startMenu to remove") if $("#startMenu").length == 0 
+	$("#startMenu").remove() if $("#startMenu").length > 0
+
+addMenus = () -> 
+	console.log("addMenus runs")
+	console.log("removeMenus warning: #startMenu already exists") if $("#startMenu").length > 0 
+	if ($("#startMenu").length == 0)
+		$('#menu').append -> menuCode 
+		$('.menuLinkOne').on 'click' , -> 
+			runLevel(100)
 
 # resize #canvas to window
 setSizes = () -> 
@@ -25,53 +41,59 @@ setSizes = () ->
 	canvas.width = canvasEdgeX
 	canvas.height = canvasEdgeY
 
-removeMenus = () -> 
-	console.log("removeMenus runs")
-	$("#startMenu").remove()
+# game loop control
 
-loopId = () -> setInterval (
+loopId = => setInterval (
 	gameLoop
-), interval 
+), INTERVAL 
+# Can't seem to get a handle to clearInterval with using CoffeeScript
 
 startLoop = () -> 
 	console.log("startLoop runs")
-	console.log("levelOver =", levelOver)
 	loopId()
 
 gameLoop = () -> 
-	console.log("gameLoop runs")
-	endGame() if levelOver == true
-	gameLoopCounter += 1 
-	levelOver = true if gameLoopCounter == 5
-	console.log("gameLoopCounter =", gameLoopCounter)
+
+	if levelOver == false
+		gameLoopCounter += 1 # gameloop counter increments only when level is active
+		console.log("gameLoop is active")
+		console.log("gameLoopCounter =", gameLoopCounter)
+		draw()
+		levelOver = true if gameLoopCounter >= 3
+		endGame() if levelOver == true
 
 endGame = () -> 
 	console.log("endGame runs")
-	console.log("loopId =", loopId())
-	clearInterval(loopId)
-
-	$('#menu').append -> 
-		menuCode  
+	## game curnently set up to keep interval going. :( 
+	# console.log("loopId is...", loopId)
+	# clearInterval(loopId)
+	addMenus()
 
 runLevel = (levelName) -> 
-	console.log("runLevel runs")
+	console.log("runLevel runs level:", levelName)
+	gameLoopCounter = 0 
+	console.log("runLevel sets gameLoopCounter to", gameLoopCounter)
+	canvas = document.getElementById("canvas")
+	console.log("runLevel creates new canvas:", canvas)
+	setSizes()
 	removeMenus()
-	startLoop()
+	startLoop() if levelOver == false #prevents duplicate loops
+	levelOver = false
 	# startGame(levelName)
 	 
+# frame drawing functions 
+draw = () ->
+	console.log("draw runs")
 
 
 
-# create canvas
+
+# create menu on jQuery document ready 
 jQuery -> 
-	canvas = document.getElementById("canvas")
 	setSizes()
+	addMenus()
 
-	$('#menu').append -> 
-		menuCode  
 
-	$('.menuLinkOne').on 'click' , -> 
-		runLevel(100)
 
 
 
@@ -83,13 +105,16 @@ jQuery ->
 
 # on menu click 
 # run chapter 
+# hide menus
 
-# on chapter  
+# to run chapter... 
 # create canvas
 # create containers 
 # create starting UI 
 # run game loop 
 # do things 
+# end game loop
+# add menus 
 
 
 
