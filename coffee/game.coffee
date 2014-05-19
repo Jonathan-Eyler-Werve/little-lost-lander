@@ -17,7 +17,6 @@ menuCode =
 	</div>
 	"
 
-
 # resize #canvas to window
 setSizes = () -> 
 	console.log("setSizes runs")
@@ -30,23 +29,27 @@ removeMenus = () ->
 	console.log("removeMenus runs")
 	$("#startMenu").remove()
 
+loopId = () -> setInterval (
+	gameLoop
+), interval 
+
 startLoop = () -> 
 	console.log("startLoop runs")
 	console.log("levelOver =", levelOver)
-	loopId = () -> setInterval gameLoop interval 
 	loopId()
 
 gameLoop = () -> 
 	console.log("gameLoop runs")
-	console.log("levelOver =", levelOver)
 	endGame() if levelOver == true
-	console.log("levelOver =", levelOver)
 	gameLoopCounter += 1 
+	levelOver = true if gameLoopCounter == 5
 	console.log("gameLoopCounter =", gameLoopCounter)
 
 endGame = () -> 
 	console.log("endGame runs")
+	console.log("loopId =", loopId())
 	clearInterval(loopId)
+
 	$('#menu').append -> 
 		menuCode  
 
