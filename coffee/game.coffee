@@ -64,15 +64,17 @@ endGame = () ->
 
 runLevel = (levelName) -> 
 	console.log("runLevel runs level:", levelName)
+	currentLevel = levelName
 	gameLoopCounter = 0 
 	console.log("runLevel sets gameLoopCounter to", gameLoopCounter)
 	canvas = document.getElementById("canvas")
 	console.log("runLevel creates new canvas:", canvas)
 	setSizes()
 	removeMenus()
-	startLoop() if levelOver == false #prevents duplicate loops
+	generateTerrain()
+	startLoop() if levelOver == false #if prevents duplicate loops
 	levelOver = false
-	currentLevel = levelName
+
 
 ############################################################	
 #game levels
@@ -95,6 +97,14 @@ gameLoop = () ->
 
 draw = () ->
 	console.log("draw runs")
+	# draw terrain 
+	# draw bullets 
+	# draw towers 
+	# draw creeps 
+
+generateTerrain = () ->
+	console.log("generateTerrain runs")
+	console.log("generateTerrain error: empty function")
 
 ############################################################
 # start game on jQuery document.ready 
