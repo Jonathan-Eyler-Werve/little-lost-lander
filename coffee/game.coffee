@@ -9,12 +9,10 @@ INTERVAL = 1000 / FRAMERATE
 ############################################################
 # "global" game state
 
-canvasEdgeX = $(window).width();
-canvasEdgeY = $(window).height();
-gameLoopCounter = 0 
-currentLevel = 0
-levelOver = false 
-
+game = new Object 
+	loopCounter: 0 
+	currentLevel: 0
+	over: false 
 
 ############################################################
 # image paths 
@@ -52,10 +50,8 @@ addMenus = () ->
 
 setSizes = () -> 
 	console.log("setSizes runs")
-	canvasEdgeX = $(window).width() 
-	canvasEdgeY = $(window).height() 
-	canvas.width = canvasEdgeX
-	canvas.height = canvasEdgeY
+	canvas.width = $(window).width() 
+	canvas.height = $(window).height() 
 
 ############################################################
 # game loop control
@@ -73,16 +69,16 @@ endGame = () ->
 
 runLevel = (levelName) -> 
 	console.log("runLevel runs level:", levelName)
-	currentLevel = levelName
-	gameLoopCounter = 0 
-	console.log("runLevel sets gameLoopCounter to", gameLoopCounter)
-	canvas = document.getElementById("canvas")
-	console.log("runLevel creates new canvas:", canvas)
+	game.currentLevel = levelName
+	game.loopCounter = 0 
+	console.log("runLevel sets gameLoopCounter to", game.loopCounter)
+	game.canvas = document.getElementById("canvas")
+	console.log("runLevel creates new game.canvas:", game.canvas)
 	setSizes()
 	removeMenus()
 	generateTerrain()
-	startLoop() if levelOver == false #if prevents duplicate loops
-	levelOver = false
+	startLoop() if game.over == false #if prevents duplicate loops
+	game.over = false
 
 
 ############################################################	
@@ -90,32 +86,27 @@ runLevel = (levelName) ->
 
 gameLoop = () -> 
 
-	if currentLevel == 100 && levelOver == false
+	if game.currentLevel == 100 && game.over == false
 		console.log("level 100 bizness logics, yo")
 
-	if levelOver == false
-		gameLoopCounter += 1 # gameloop counter increments only when level is active
+	if game.over == false
+		game.loopCounter += 1 # gameloop counter increments only when level is active
 		console.log("gameLoop is active")
-		console.log("gameLoopCounter =", gameLoopCounter)
+		console.log("game.loopCounter =", game.loopCounter)
 		draw()
-		levelOver = true if gameLoopCounter >= 3
-		endGame() if levelOver == true
+		game.over = true if game.loopCounter >= 3
+		endGame() if game.over == true
 
 ############################################################
 # drawing functions 
 
 draw = () ->
 	console.log("draw runs")
-	console.log("canvasEdgeX is ", canvasEdgeX)
-	console.log("canvasEdgeY is ", canvasEdgeY)
-		# locate center of screen 
 
-	centerX = grid(canvasEdgeX / 2)
-	centerY = grid(canvasEdgeY / 2)
-	console.log("centerX is ", centerX)
-	console.log("centerY is ", centerY)
+	# locate center of screen 
 
-		# translate positon to grid system 
+	centerX = toGrid(game.canvas.width / 2)
+	centerY = toGrid(game.canvas.height / 2)
 
 	# draw terrain 
 	# draw bullets 
@@ -124,7 +115,7 @@ draw = () ->
 
 	# draw creeps 
 
-grid = (number) -> 
+toGrid = (number) -> 
 	Math.floor(number / 50) * 50  
 	
 generateTerrain = () ->
@@ -135,7 +126,7 @@ generateTerrain = () ->
 # start game on jQuery document.ready 
 
 jQuery -> 
-	console.log("document ready!")
+	console.log("$ document ready")
 	setSizes()
 	addMenus()
 
@@ -143,10 +134,10 @@ jQuery ->
 # tests
 
 console.log("testing: grid()")
-console.log(grid(0) == 0)
-console.log(grid(1) == 0)
-console.log(grid(50) == 50)
-console.log(grid(51) == 50)
-console.log(grid(999) == 950)
-console.log(grid(-1) == -50)
-console.log(grid(-51) == -100)
+console.log(toGrid(0) == 0)
+console.log(toGrid(1) == 0)
+console.log(toGrid(50) == 50)
+console.log(toGrid(51) == 50)
+console.log(toGrid(999999999999999) == 999999999999950)
+console.log(toGrid(-1) == -50)
+console.log(toGrid(-51) == -100)
