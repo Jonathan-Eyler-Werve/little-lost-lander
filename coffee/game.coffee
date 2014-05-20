@@ -5,14 +5,12 @@
 
 FRAMERATE = 1 # frames per second 
 INTERVAL = 1000 / FRAMERATE
+@W = $(window)
 
 ############################################################
 # "global" game state
 
-game = new Object 
-	loopCounter: 0 
-	currentLevel: 0
-	over: false 
+
 
 ############################################################
 # image paths 
@@ -50,8 +48,8 @@ addMenus = () ->
 
 setSizes = () -> 
 	console.log("setSizes runs")
-	canvas.width = $(window).width() 
-	canvas.height = $(window).height() 
+	W.game.canvas.width = $(window).width() 
+	W.game.canvas.height = $(window).height() 
 
 ############################################################
 # game loop control
@@ -127,17 +125,42 @@ generateTerrain = () ->
 
 jQuery -> 
 	console.log("$ document ready")
+
+	W.game = new Object 
+	loopCounter: 0 
+	currentLevel: 0
+	over: false 
+	canvas: document.getElementById("canvas")
+
+	runTests()
 	setSizes()
 	addMenus()
+
+	console.log(game)
 
 ############################################################
 # tests
 
-console.log("testing: grid()")
-console.log(toGrid(0) == 0)
-console.log(toGrid(1) == 0)
-console.log(toGrid(50) == 50)
-console.log(toGrid(51) == 50)
-console.log(toGrid(999999999999999) == 999999999999950)
-console.log(toGrid(-1) == -50)
-console.log(toGrid(-51) == -100)
+runTests = () -> 
+	console.log
+	console.log("testing: game object creation")
+	console.log(W != undefined)
+	console.log(W.game != undefined)
+	console.log(W.game.canvas != undefined)
+	console.log
+	console.log("testing setSizes()")
+	setSizes()
+	console.log(W.game.canvas.width != undefined)
+	console.log(W.game.canvas.height != undefined)
+	console.log(W.game.canvas.width == $(window).width() )
+	console.log(W.game.canvas.height == $(window).width() )
+	console.log
+
+	console.log("testing: toGrid()")
+	console.log(toGrid(0) == 0)
+	console.log(toGrid(1) == 0)
+	console.log(toGrid(50) == 50)
+	console.log(toGrid(51) == 50)
+	console.log(toGrid(999999999999999) == 999999999999950)
+	console.log(toGrid(-1) == -50)
+	console.log(toGrid(-51) == -100)
