@@ -15,6 +15,15 @@ gameLoopCounter = 0
 currentLevel = 0
 levelOver = false 
 
+
+############################################################
+# image paths 
+
+imgBase = new Image 
+	src: "images/icon_18231.svg"
+	height: 50
+	width: 50 
+
 ############################################################
 # UI elements 
 
@@ -97,11 +106,27 @@ gameLoop = () ->
 
 draw = () ->
 	console.log("draw runs")
+	console.log("canvasEdgeX is ", canvasEdgeX)
+	console.log("canvasEdgeY is ", canvasEdgeY)
+		# locate center of screen 
+
+	centerX = grid(canvasEdgeX / 2)
+	centerY = grid(canvasEdgeY / 2)
+	console.log("centerX is ", centerX)
+	console.log("centerY is ", centerY)
+
+		# translate positon to grid system 
+
 	# draw terrain 
 	# draw bullets 
-	# draw towers 
+	# draw towers
+
+
 	# draw creeps 
 
+grid = (number) -> 
+	Math.floor(number / 50) * 50  
+	
 generateTerrain = () ->
 	console.log("generateTerrain runs")
 	console.log("generateTerrain error: empty function")
@@ -110,7 +135,18 @@ generateTerrain = () ->
 # start game on jQuery document.ready 
 
 jQuery -> 
+	console.log("document ready!")
 	setSizes()
 	addMenus()
 
+############################################################
+# tests
 
+console.log("testing: grid()")
+console.log(grid(0) == 0)
+console.log(grid(1) == 0)
+console.log(grid(50) == 50)
+console.log(grid(51) == 50)
+console.log(grid(999) == 950)
+console.log(grid(-1) == -50)
+console.log(grid(-51) == -100)
