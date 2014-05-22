@@ -1,5 +1,8 @@
 # THIS SCRIPT INCLUDED WHEN game.html LOADS. 
 
+# compile with...
+# coffee --watch --compile --output js/ coffee/
+
 ############################################################
 # "global" constants
 
@@ -57,20 +60,17 @@ W.resize ->
 
 startLoop = () -> 
 	console.log("startLoop runs")
-	setInterval (gameLoop), INTERVAL 
+	setInterval (levelLoop), INTERVAL 
 
 endGame = () -> 
 	console.log("endGame runs")
-	## game curnently set up to keep interval going. :( 
-	# console.log("loopId is...", loopId)
-	# clearInterval(loopId)
 	addMenus()
 
 runLevel = (levelName) -> 
 	console.log("runLevel runs level:", levelName)
 	W.game.currentLevel = levelName
 	W.game.loopCounter = 0 
-	console.log("runLevel sets gameLoopCounter to", W.game.loopCounter)
+	console.log("runLevel sets game.loopCounter to", W.game.loopCounter)
 	W.game.canvas = document.getElementById("canvas")
 	console.log("runLevel creates new W.game.canvas:", W.game.canvas)
 	removeMenus()
@@ -81,40 +81,47 @@ runLevel = (levelName) ->
 ############################################################	
 #game levels
 
-gameLoop = () -> 
+levelLoop = () -> 
 
 	if W.game.currentLevel == 100 && W.game.over == false
 		console.log("level 100 bizness logics, yo")
-		towers[0] = new Tower W.game.centerX, W.game.centerY
+		W.game.towers[0] = new FireTower W.game.centerX, W.game.centerY if W.game.loopCounter == 2
 
-
-		W.game.over = true if W.game.loopCounter >= 3
+		W.game.over = true if W.game.loopCounter >= 5
 		endGame() if W.game.over == true
 
 	if W.game.over == false
 		W.game.loopCounter += 1 # gameloop counter increments only when level is active
-		console.log("gameLoop is active")
+		console.log("levelLoop is active")
 		console.log("W.game.loopCounter =", W.game.loopCounter)
-		draw()
+		drawEverything()
 		
 ############################################################
 # drawing functions 
 
-draw = () ->
+drawEverything = () ->
 	console.log("draw runs")
 
 	# locate center of screen 
 
-	centerX = toGrid(W.game.canvas.width / 2)
-	centerY = toGrid(W.game.canvas.height / 2)
-	W.game.center = new Object 
-		x: centerX
-		y: centerY
-
-	# draw terrain 
+	_centerX = toGrid(W.game.canvas.width / 2)
+	_centerY = toGrid(W.game.canvas.height / 2)
+	W.game.center = 
+		x: _centerX
+		y: _centerY
+	console.log(W.game.towers)	
+	
+	# draw terrain <- collections, bottom layer up
 	# draw bullets 
-	# draw towers
-	# draw creeps 
+	drawCollection(W.game.towers)	
+	# draw creeps
+
+drawCollection = (collection) -> 
+	console.log
+	drawOne(thing) for thing in collection 
+
+drawOne = (thing) ->
+	console.log("drawThing runs")
 
 toGrid = (location) -> 
 	Math.floor(location / 50) * 50  
@@ -124,10 +131,14 @@ generateTerrain = () ->
 	console.log("generateTerrain error: empty function")
 
 
+
+
+
+
 ############################################################	
 #towers 
 
-class Tower 
+class Building 
 	constructor: (posX, posY) ->		
 		this.posX = toGrid(posX)
 		this.posY = toGrid(posY)
@@ -141,7 +152,7 @@ class Tower
 		console.log("tower.rotate is called")
 		console.log("rotate error: empty function")
 
-class Turret extends Tower
+class FireTower extends Building
 	constructor: (posX, posY) ->
 		this.image = imgBase 
 		super posX, posY
@@ -162,7 +173,7 @@ class Turret extends Tower
 jQuery -> 
 	console.log("$ document ready")
 
-	W.game = new Object 
+	W.game = 
 		loopCounter: 0 
 		currentLevel: 0
 		over: false 
@@ -213,28 +224,25 @@ runTests = () ->
 	console.log("")
 
 	console.log("testing: draw()")
+	console.log("Error: ain't got no tests")
 	console.log("")
 
-
-	console.log("testing: tower creation")
-
-	console.log("")
-
-	console.log("testing: tower creation")
-	testTower = new Object 
+	console.log("testing: towers collection")
+	testTower = 
 		posX: 0
 		posY: 0
 		image: imgBase
 	W.game.towers.push testTower
-
 	console.log(W.game.towers[W.game.towers.length - 1].posX == 0)
 	console.log(W.game.towers[W.game.towers.length - 1].image.src == "file:///Users/jonathan/gdrive/CODE/little-lost-lander/images/icon_18231.svg")
 	console.log("")
-	console.log("")				
-	console.log("")
-
 	W.game.towers.pop(1) # cleaning up test data
 
-
+	console.log("testing: class FireTower")
+	fireTest = new FireTower 51, 1 
+	console.log(fireTest.image == imgBase)
+	console.log(fireTest.posX == 50)
+	console.log(fireTest.posY == 0)
+	console.log("")
 
 
