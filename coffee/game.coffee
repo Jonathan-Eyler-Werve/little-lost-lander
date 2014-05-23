@@ -112,36 +112,35 @@ drawEverything = () ->
 	console.log("drawEverything runs")
 
 	# relocate center of screen 
-
 	_centerX = toGrid(window.game.canvas.width / 2)
 	_centerY = toGrid(window.game.canvas.height / 2)
 	window.game.center = 
 		x: _centerX
 		y: _centerY
 	
+	clearCanvas(window.game.canvas)
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
-	console.log(towers)
 	drawCollection(towers)	
 	# draw movers
+
+drawOne = (thing) ->
+	console.log("drawOne runs for ", thing)
+
+
+
+	#shift context to thing location 
+	#rotate conext to thing rotation
+	#draw object 
+	#restore context 
 
 drawCollection = (collection) -> 
 	console.log("drawCollection for", collection)
 	drawOne(thing) for thing in collection 
 
-drawOne = (thing) ->
-	console.log("drawOne runs for ", thing)
-	#shift context to thing location 
-	#rotate conext to thing rotation
-	#draw object 
-	#restore conext 
-
-	# thing.x
-	# thing.y 
-	
-
-
-
+clearCanvas = () -> 
+	window.game.context.clearRect(0, 0, window.game.canvas.width, window.game.canvas.height)  
+	window.game.context.fillStyle = "rgba(0, 255, 0, 1)";       
 
 toGrid = (location) -> 
 	Math.floor(location / 50) * 50  
@@ -196,7 +195,7 @@ jQuery ->
 		context: undefined
 
 	window.game.canvas = document.getElementById("canvas")
-	window.game.context = window.game.canvas.getContext("2d")	 
+	window.game.context = window.game.canvas.getContext("2d") 
 
 	setAlias()
 	setSizes()
@@ -275,7 +274,8 @@ runTests = () ->
 	console.log("")
 
 	console.log("testing: draw()")
-	console.log("Error: ain't got no tests")
+	console.log(window.game.canvas.constructor == HTMLCanvasElement, "canvas exists")
+	console.log(window.game.context.constructor == CanvasRenderingContext2D, "context exists")
 	console.log("")
 
 	console.log("testing: towers collection")
