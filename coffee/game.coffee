@@ -40,7 +40,7 @@ removeMenus = () ->
 
 addMenus = () -> 
 	console.log("addMenus runs")
-	console.log("removeMenus warning: #startMenu already exists") if $("#startMenu").length > 0 
+	console.log("addMenus warning: #startMenu already exists") if $("#startMenu").length > 0 
 	if ($("#startMenu").length == 0)
 		$('#menu').append -> menuCode 
 		$('.menuLinkOne').on 'click' , -> 
@@ -63,51 +63,58 @@ $(window).resize ->
 runLevel = (levelName) -> 
 	console.log("runLevel runs level:", levelName)
 	window.game.currentLevel = levelName
-	loopCounter = 0 
+	@loopCounter = 0 
 	console.log("runLevel sets game.loopCounter to", loopCounter)
 	window.game.canvas = document.getElementById("canvas")
 	console.log("runLevel creates new window.game.canvas:", window.game.canvas)
 	removeMenus()
 	generateTerrain()
-	startLoop() if window.game.over == false #if prevents duplicate loops
-	window.game.over = false
+	console.log(window.game.status)
+	if window.game.status == "start" # prevents duplicate loops
+		startLoop() 
+	else
+		window.game.status = "running"	
 
 startLoop = () -> 
 	console.log("startLoop runs")
+	window.game.status = "running"
 	setInterval (levelLoop), INTERVAL 
 
 levelLoop = () -> 
 
 # LEVEL 100 
-	if window.game.currentLevel == 100 && window.game.over == false
-		console.log("level 100 bizness logics, yo")
-		towers[0] = new FireTower window.game.center.x, window.game.center.Y if loopCounter == 2
-
-		W.game.over = true if loopCounter >= 5
-		endGame() if W.game.over == true
+	if window.game.currentLevel == 100 && window.game.status == "running"
+		@towers[0] = new FireTower window.game.center.x, window.game.center.y if @loopCounter == 2
+		window.game.status = "endLevel" if @loopCounter >= 5
+		endGame() if window.game.status == "endLevel"
+		console.log("level 100 is ", window.game.status, "at loop", @loopCounter)
 
 # ALL LEVELS
-	if W.game.over == false
-		W.game.loopCounter += 1 # gameloop counter increments only when level is active
-		console.log("levelLoop is active")
-		console.log("W.game.loopCounter =", loopCounter)
+	if window.game.status == "running"
+		@loopCounter += 1 # gameloop counter increments only when level is active
+		console.log("levelLoop is active. status =", window.game.status)
+		console.log("loopCounter =", @loopCounter)
 		drawEverything()
 
 endGame = () -> 
 	console.log("endGame runs")
-	W.game.towers = []
+	drawEverything()
+	window.game.status = "paused"
+	@towers.pop(@towers.length) #emptys array while keeping alias
+	# clear @movers 
+	# clear @terrain 
 	addMenus()		
 		
 ############################################################
 # drawing functions 
 
 drawEverything = () ->
-	console.log("draw runs")
+	console.log("drawEverything runs")
 
 	# relocate center of screen 
 
-	_centerX = toGrid(W.game.canvas.width / 2)
-	_centerY = toGrid(W.game.canvas.height / 2)
+	_centerX = toGrid(window.game.canvas.width / 2)
+	_centerY = toGrid(window.game.canvas.height / 2)
 	window.game.center = 
 		x: _centerX
 		y: _centerY
@@ -119,11 +126,22 @@ drawEverything = () ->
 	# draw movers
 
 drawCollection = (collection) -> 
-	console.log
+	console.log("drawCollection for", collection)
 	drawOne(thing) for thing in collection 
 
 drawOne = (thing) ->
 	console.log("drawOne runs for ", thing)
+	#shift context to thing location 
+	#rotate conext to thing rotation
+	#draw object 
+	#restore conext 
+
+	# thing.x
+	# thing.y 
+	
+
+
+
 
 toGrid = (location) -> 
 	Math.floor(location / 50) * 50  
@@ -131,11 +149,6 @@ toGrid = (location) ->
 generateTerrain = () ->
 	console.log("generateTerrain runs")
 	console.log("generateTerrain error: empty function")
-
-
-
-
-
 
 ############################################################	
 #towers 
@@ -175,7 +188,7 @@ jQuery ->
 	window.game = 
 		loopCounter: 0 
 		currentLevel: 0
-		over: false 
+		status: "start" 
 		towers: []
 		movers: []
 		terrain: []
@@ -206,11 +219,28 @@ runTests = () ->
 	console.log("")
 
 	console.log("testing: game object creation")
-	console.log(window.game)
 	console.log(window.game != undefined)
 	console.log(window.game.constructor == Object)
 	console.log(window.game.canvas.constructor == HTMLCanvasElement)
+	console.log((window.game.status == "start"), "game initializes with game.status == start")	
 	console.log("")
+
+	console.log("testing: runLevel")
+	@loopCounter = 1
+	window.game.status = "running"
+	runLevel()
+	console.log(@loopCounter == 0, "loopCounter is reset to 0")
+	console.log("")
+	window.game.status = "start" #cleaning up test state
+ 
+
+	console.log("testing: endGame()")
+	# window.game.towers.push("foo")
+	endGame()
+	console.log($("#startMenu").length > 0, "endGame restores menus")
+	console.log(@towers[@towers.length - 1] != "foo", "endGame clears towers")
+	console.log("")
+	window.game.status = "start" #cleaning up test state
 
 	console.log("testing: setAlias")
 	console.log(@towers == window.game.towers, "tower alias" )
@@ -225,7 +255,6 @@ runTests = () ->
 	console.log("")
 
 	console.log("testing setSizes()")
-
 	setSizes()
 	console.log(window.game.canvas.width != undefined)
 	console.log(window.game.canvas.height != undefined)

@@ -32,7 +32,7 @@ removeMenus = function() {
 addMenus = function() {
   console.log("addMenus runs");
   if ($("#startMenu").length > 0) {
-    console.log("removeMenus warning: #startMenu already exists");
+    console.log("addMenus warning: #startMenu already exists");
   }
   if ($("#startMenu").length === 0) {
     $('#menu').append(function() {
@@ -55,58 +55,61 @@ $(window).resize(function() {
 });
 
 runLevel = function(levelName) {
-  var loopCounter;
   console.log("runLevel runs level:", levelName);
   window.game.currentLevel = levelName;
-  loopCounter = 0;
+  this.loopCounter = 0;
   console.log("runLevel sets game.loopCounter to", loopCounter);
   window.game.canvas = document.getElementById("canvas");
   console.log("runLevel creates new window.game.canvas:", window.game.canvas);
   removeMenus();
   generateTerrain();
-  if (window.game.over === false) {
-    startLoop();
+  console.log(window.game.status);
+  if (window.game.status === "start") {
+    return startLoop();
+  } else {
+    return window.game.status = "running";
   }
-  return window.game.over = false;
 };
 
 startLoop = function() {
   console.log("startLoop runs");
+  window.game.status = "running";
   return setInterval(levelLoop, INTERVAL);
 };
 
 levelLoop = function() {
-  if (window.game.currentLevel === 100 && window.game.over === false) {
-    console.log("level 100 bizness logics, yo");
-    if (loopCounter === 2) {
-      towers[0] = new FireTower(window.game.center.x, window.game.center.Y);
+  if (window.game.currentLevel === 100 && window.game.status === "running") {
+    if (this.loopCounter === 2) {
+      this.towers[0] = new FireTower(window.game.center.x, window.game.center.y);
     }
-    if (loopCounter >= 5) {
-      W.game.over = true;
+    if (this.loopCounter >= 5) {
+      window.game.status = "endLevel";
     }
-    if (W.game.over === true) {
+    if (window.game.status === "endLevel") {
       endGame();
     }
+    console.log("level 100 is ", window.game.status, "at loop", this.loopCounter);
   }
-  if (W.game.over === false) {
-    W.game.loopCounter += 1;
-    console.log("levelLoop is active");
-    console.log("W.game.loopCounter =", loopCounter);
+  if (window.game.status === "running") {
+    this.loopCounter += 1;
+    console.log("levelLoop is active. status =", window.game.status);
+    console.log("loopCounter =", this.loopCounter);
     return drawEverything();
   }
 };
 
 endGame = function() {
   console.log("endGame runs");
-  W.game.towers = [];
+  window.game.status = "paused";
+  this.towers.pop(this.towers.length);
   return addMenus();
 };
 
 drawEverything = function() {
   var _centerX, _centerY;
   console.log("draw runs");
-  _centerX = toGrid(W.game.canvas.width / 2);
-  _centerY = toGrid(W.game.canvas.height / 2);
+  _centerX = toGrid(window.game.canvas.width / 2);
+  _centerY = toGrid(window.game.canvas.height / 2);
   window.game.center = {
     x: _centerX,
     y: _centerY
@@ -177,7 +180,7 @@ jQuery(function() {
   window.game = {
     loopCounter: 0,
     currentLevel: 0,
-    over: false,
+    status: "start",
     towers: [],
     movers: [],
     terrain: [],
@@ -206,11 +209,24 @@ runTests = function() {
   console.log("runTests() runs");
   console.log("");
   console.log("testing: game object creation");
-  console.log(window.game);
   console.log(window.game !== void 0);
   console.log(window.game.constructor === Object);
   console.log(window.game.canvas.constructor === HTMLCanvasElement);
+  console.log(window.game.status === "start", "game initializes with game.status == start");
   console.log("");
+  console.log("testing: runLevel");
+  this.loopCounter = 1;
+  window.game.status = "running";
+  runLevel();
+  console.log(this.loopCounter === 0, "loopCounter is reset to 0");
+  console.log("");
+  window.game.status = "start";
+  console.log("testing: endGame()");
+  endGame();
+  console.log($("#startMenu").length > 0, "endGame restores menus");
+  console.log(this.towers[this.towers.length - 1] !== "foo", "endGame clears towers");
+  console.log("");
+  window.game.status = "start";
   console.log("testing: setAlias");
   console.log(this.towers === window.game.towers, "tower alias");
   console.log(this.terrain === window.game.terrain, "terrain alias");
