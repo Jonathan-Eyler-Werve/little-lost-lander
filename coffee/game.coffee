@@ -8,7 +8,6 @@
 
 FRAMERATE = 1 # frames per second 
 INTERVAL = 1000 / FRAMERATE
-@W = $(window)
 
 ############################################################
 # image paths 
@@ -17,8 +16,11 @@ INTERVAL = 1000 / FRAMERATE
 imgBase = new Image 50, 50 
 imgBase.src = "images/icon_18231.svg"
 
+window.game = 
+	towers: []
+	movers: []
+	terrain: []
 # movers
-
 # terrain
 
 ############################################################
@@ -49,52 +51,52 @@ addMenus = () ->
 
 setSizes = () -> 
 	console.log("setSizes runs")
-	W.game.canvas.width = $(window).width() 
-	W.game.canvas.height = $(window).height() 
+	window.game.canvas.width = $(window).width() 
+	window.game.canvas.height = $(window).height() 
 
-W.resize -> 
+$(window).resize -> 
   setSizes();	
 
 ############################################################
 # game loop control
 
+runLevel = (levelName) -> 
+	console.log("runLevel runs level:", levelName)
+	window.game.currentLevel = levelName
+	loopCounter = 0 
+	console.log("runLevel sets game.loopCounter to", loopCounter)
+	window.game.canvas = document.getElementById("canvas")
+	console.log("runLevel creates new window.game.canvas:", window.game.canvas)
+	removeMenus()
+	generateTerrain()
+	startLoop() if window.game.over == false #if prevents duplicate loops
+	window.game.over = false
+
 startLoop = () -> 
 	console.log("startLoop runs")
 	setInterval (levelLoop), INTERVAL 
 
-endGame = () -> 
-	console.log("endGame runs")
-	addMenus()
-
-runLevel = (levelName) -> 
-	console.log("runLevel runs level:", levelName)
-	W.game.currentLevel = levelName
-	W.game.loopCounter = 0 
-	console.log("runLevel sets game.loopCounter to", W.game.loopCounter)
-	W.game.canvas = document.getElementById("canvas")
-	console.log("runLevel creates new W.game.canvas:", W.game.canvas)
-	removeMenus()
-	generateTerrain()
-	startLoop() if W.game.over == false #if prevents duplicate loops
-	W.game.over = false
-
-############################################################	
-#game levels
-
 levelLoop = () -> 
 
-	if W.game.currentLevel == 100 && W.game.over == false
+# LEVEL 100 
+	if window.game.currentLevel == 100 && window.game.over == false
 		console.log("level 100 bizness logics, yo")
-		W.game.towers[0] = new FireTower W.game.centerX, W.game.centerY if W.game.loopCounter == 2
+		towers[0] = new FireTower window.game.center.x, window.game.center.Y if loopCounter == 2
 
-		W.game.over = true if W.game.loopCounter >= 5
+		W.game.over = true if loopCounter >= 5
 		endGame() if W.game.over == true
 
+# ALL LEVELS
 	if W.game.over == false
 		W.game.loopCounter += 1 # gameloop counter increments only when level is active
 		console.log("levelLoop is active")
-		console.log("W.game.loopCounter =", W.game.loopCounter)
+		console.log("W.game.loopCounter =", loopCounter)
 		drawEverything()
+
+endGame = () -> 
+	console.log("endGame runs")
+	W.game.towers = []
+	addMenus()		
 		
 ############################################################
 # drawing functions 
@@ -102,26 +104,26 @@ levelLoop = () ->
 drawEverything = () ->
 	console.log("draw runs")
 
-	# locate center of screen 
+	# relocate center of screen 
 
 	_centerX = toGrid(W.game.canvas.width / 2)
 	_centerY = toGrid(W.game.canvas.height / 2)
-	W.game.center = 
+	window.game.center = 
 		x: _centerX
 		y: _centerY
-	console.log(W.game.towers)	
 	
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
-	drawCollection(W.game.towers)	
-	# draw creeps
+	console.log(towers)
+	drawCollection(towers)	
+	# draw movers
 
 drawCollection = (collection) -> 
 	console.log
 	drawOne(thing) for thing in collection 
 
 drawOne = (thing) ->
-	console.log("drawThing runs")
+	console.log("drawOne runs for ", thing)
 
 toGrid = (location) -> 
 	Math.floor(location / 50) * 50  
@@ -142,7 +144,7 @@ class Building
 	constructor: (posX, posY) ->		
 		this.posX = toGrid(posX)
 		this.posY = toGrid(posY)
-		this.bornCycle = W.game.loopCounter
+		this.bornCycle = @loopCounter
 
 	drawTower: -> 
 		console.log("tower.drawTower is called")
@@ -165,40 +167,56 @@ class FireTower extends Building
 
 
 
-
-
 ############################################################
 # start game on jQuery document.ready 
 
 jQuery -> 
 	console.log("$ document ready")
-
-	W.game = 
+	window.game = 
 		loopCounter: 0 
 		currentLevel: 0
 		over: false 
-		canvas: document.getElementById("canvas")
-		context: canvas.getContext("2d")
 		towers: []
-	
+		movers: []
+		terrain: []
+		canvas: undefined
+		context: undefined
+
+	window.game.canvas = document.getElementById("canvas")
+	window.game.context = window.game.canvas.getContext("2d")	 
+
+	setAlias()
 	setSizes()
 	addMenus()
 	runTests()
 
-
- 
-
+setAlias = () -> 
+	console.log("setAlias runs")
+	@towers = window.game.towers 
+	@movers = window.game.movers 
+	@terrain = window.game.terrain
+	@loopCounter = window.game.loopCounter
 
 ############################################################
 # tests
 
 runTests = () -> 
 	console.log("")
+	console.log("runTests() runs")
+	console.log("")
 
 	console.log("testing: game object creation")
-	console.log(W != undefined)
-	console.log(W.game.constructor == Object)
-	console.log(W.game.canvas.constructor == HTMLCanvasElement)
+	console.log(window.game)
+	console.log(window.game != undefined)
+	console.log(window.game.constructor == Object)
+	console.log(window.game.canvas.constructor == HTMLCanvasElement)
+	console.log("")
+
+	console.log("testing: setAlias")
+	console.log(@towers == window.game.towers, "tower alias" )
+	console.log(@terrain == window.game.terrain, "terrain alias")
+	console.log(@terrain == window.game.terrain, "movers alias")
+	console.log(@loopCounter == window.game.loopCounter, "loopCounter alias")
 	console.log("")
 
 	console.log("testing: image object creation")	
@@ -207,10 +225,14 @@ runTests = () ->
 	console.log("")
 
 	console.log("testing setSizes()")
-	console.log(W.game.canvas.width != undefined)
-	console.log(W.game.canvas.height != undefined)
-	console.log(W.game.canvas.width == $(window).width() )
-	console.log(W.game.canvas.height == $(window).height() )
+
+	setSizes()
+	console.log(window.game.canvas.width != undefined)
+	console.log(window.game.canvas.height != undefined)
+	console.log(window.game.canvas.width == $(window).width() )
+	console.log(window.game.canvas.height == $(window).height(), "height definition = current height" )
+	console.log(window.game.canvas.height, $(window).height(), "heights")
+	# I don't know why this isn't breaking things. Will figure out later. 
 	console.log("")
 
 	console.log("testing: toGrid()")
@@ -232,11 +254,12 @@ runTests = () ->
 		posX: 0
 		posY: 0
 		image: imgBase
-	W.game.towers.push testTower
-	console.log(W.game.towers[W.game.towers.length - 1].posX == 0)
-	console.log(W.game.towers[W.game.towers.length - 1].image.src == "file:///Users/jonathan/gdrive/CODE/little-lost-lander/images/icon_18231.svg")
+	window.game.towers.push testTower
+	console.log(towers == window.game.towers)
+	console.log(towers[@towers.length - 1].posX == 0)
+	console.log(towers[@towers.length - 1].image.src == "file:///Users/jonathan/gdrive/CODE/little-lost-lander/images/icon_18231.svg")
 	console.log("")
-	W.game.towers.pop(1) # cleaning up test data
+	window.game.towers.pop(1) # cleaning up test data
 
 	console.log("testing: class FireTower")
 	fireTest = new FireTower 51, 1 
@@ -244,5 +267,3 @@ runTests = () ->
 	console.log(fireTest.posX == 50)
 	console.log(fireTest.posY == 0)
 	console.log("")
-
-
