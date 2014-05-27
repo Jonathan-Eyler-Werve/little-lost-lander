@@ -41,9 +41,16 @@ gameControlsCode =
 	</div>
 	"
 
-currentControl = (message) -> 
-	$("#currentControl").remove() if $("#currentControl").length > 0 
-	return "<div id='currentControl' class='top-right-panel'> " + message + " </div>"	
+setCurrentControl = (_control) -> 
+	window.game.currentControl = _control 
+	$("#currentControl").remove() if $("#currentControl").length > 0 	
+	
+	_message = "Place a tower" if _control == "addBuilding"
+	_currentControlCode = "<div id='currentControl' class='top-right-panel'> " + _message + " </div>"	
+	
+	$('#top-right-panel').append -> _currentControlCode unless _control == "none" || _control == "start"
+
+	return _message
 
 removeMenus = () -> 
 	console.log("removeMenus() runs")
@@ -67,6 +74,7 @@ addGameControls = () ->
 		$('#menu').append -> gameControlsCode 
 		
 		$('.addBuilding').on 'click' , -> 
+			console.log("addBuilding button event")
 			gameControls("addBuilding")
 
 		$('.endLevel').on 'click' , -> 
@@ -80,9 +88,9 @@ removeGameControls = () ->
 
 gameControls = (command) -> 
 	if command == "addBuilding"
-		console.log("#top-right-panel grabbed as")
-		console.log($('#top-right-panel').length)
-		$('#top-right-panel').append -> currentControl("Place tower") 	
+		setCurrentControl(command)
+		# other things that happen because we are in window.game.currentControl == "addBuiding"
+		# possible state toggle of the button UI (ie, cancel currentControl)
 
 	window.game.status = "endLevel"	if command == "endLevel"
 
@@ -249,7 +257,7 @@ jQuery ->
 		towers: []
 		movers: []
 		terrain: []
-		controlState: "start"
+		currentControl: "start"
 		canvas: undefined
 		context: undefined
 
@@ -289,12 +297,6 @@ runTests = () ->
 	console.log(@loopCounter == 0, "loopCounter is reset to 0")
 	console.log("")
 	window.game.status = "start" #cleaning up test state
-
-	console.log("testing: selectors")
-	console.log(($('#menu').length > 0), "#menu")
-	console.log(($('#top-right-panel').length > 0), "#top-right-panel")
-	console.log("")
- 
 
 	console.log("testing: endGame()")
 	# window.game.towers.push("foo")
@@ -358,4 +360,19 @@ runTests = () ->
 	console.log(fireTest.image == imgBase)
 	console.log(fireTest.posX == 50)
 	console.log(fireTest.posY == 0)
+	console.log("")
+
+	console.log("testing: selectors")
+	console.log(($('#menu').length > 0), "#menu")
+	console.log(($('#top-right-panel').length > 0), "#top-right-panel")
+	console.log("")
+ 
+	console.log("testing: setCurrentControl()")
+	setCurrentControl("none")
+	console.log($("#currentControl").length == 0)
+	setCurrentControl("addBuilding")
+	console.log($("#currentControl").length > 0)
+	console.log(window.game.currentControl == "addBuilding")
+	setCurrentControl("start")
+	console.log(window.game.currentControl == "start")
 	console.log("")
