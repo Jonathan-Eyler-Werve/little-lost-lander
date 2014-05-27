@@ -27,11 +27,23 @@ window.game =
 # UI elements 
 
 menuCode = 
-	"<div id='startMenu'>
+	"<div id='startMenu' class='over-canvas'>
 	<p>Hello game, this is game.</p>
 	<a href='#' class='menuLinkOne'>Start level one.</a>
 	</div>
 	"
+
+gameControlsCode = 
+	"<div id='gameControls' class='over-canvas'>
+	<p>This is gameControls.</p>
+	<a href='#' class='addBuilding'>Make a building appear.</a>
+	<a href='#' class='endLevel'>End this level.</a>	
+	</div>
+	"
+
+currentControlCode = (message) -> 
+	$('#menu').remove(".currentControl") if $(".currentControl").length > 0 
+	return "<div id='currentControl' class='top-right-panel'> " + message + " </div>"	
 
 removeMenus = () -> 
 	console.log("removeMenus runs")
@@ -46,13 +58,45 @@ addMenus = () ->
 		$('.menuLinkOne').on 'click' , -> 
 			runLevel(100)
 
+addGameControls = () ->				
+	console.log("addGameControls() runs")
+	console.log("addMenus warning: #gameControls already exists") if $("#gameControls").length > 0 
+	if ($("#gameControls").length == 0)
+		$('#menu').append -> gameControlsCode 
+		
+		$('.addBuilding').on 'click' , -> 
+			gameControls("addBuilding")
+
+		$('.endLevel').on 'click' , -> 
+			console.log("endLevel button event")
+			gameControls("endLevel")	
+
+removeGameControls = () -> 
+	console.log("removeGameControls() runs")
+	console.log("removeGameControls warning: no #startMenu to remove") if $("#gameControls").length == 0 
+	$("#gameControls").remove() if $("#gameControls").length > 0
+
+gameControls = (command) -> 
+	if command == "addBuilding"
+		console.log("Error: addBuilding function doesn't exist")
+		$('#menu').append -> currentControlCode("Place tower") 	
+
+	window.game.status = "endLevel"	if command == "endLevel"
+
+
 ############################################################
 # resize #canvas to window
 
 setSizes = () -> 
-	console.log("setSizes runs")
+	# console.log("setSizes() runs")
 	window.game.canvas.width = $(window).width() 
 	window.game.canvas.height = $(window).height() 
+
+	_centerX = toGrid(window.game.canvas.width / 2)
+	_centerY = toGrid(window.game.canvas.height / 2)
+	window.game.center = 
+		x: _centerX
+		y: _centerY
 
 $(window).resize -> 
   setSizes();	
@@ -65,10 +109,14 @@ runLevel = (levelName) ->
 	window.game.currentLevel = levelName
 	@loopCounter = 0 
 	console.log("runLevel sets game.loopCounter to", loopCounter)
+	
+	removeMenus()
+	setSizes()
 	window.game.canvas = document.getElementById("canvas")
 	console.log("runLevel creates new window.game.canvas:", window.game.canvas)
-	removeMenus()
-	generateTerrain()
+
+	# generateTerrain()
+
 	console.log(window.game.status)
 	if window.game.status == "start" # prevents duplicate loops
 		startLoop() 
@@ -82,42 +130,50 @@ startLoop = () ->
 
 levelLoop = () -> 
 
-# LEVEL 100 
-	if window.game.currentLevel == 100 && window.game.status == "running"
-		@towers[0] = new FireTower window.game.center.x, window.game.center.y if @loopCounter == 2
-		window.game.status = "endLevel" if @loopCounter >= 5
-		endGame() if window.game.status == "endLevel"
-		console.log("level 100 is ", window.game.status, "at loop", @loopCounter)
+	levelInitialize(window.game.currentLevel) if @loopCounter == 0 # level initialize
 
-# ALL LEVELS
-	if window.game.status == "running"
+	if window.game.status == "running" || window.game.status == "endLevel"
+
+	#LEVELS 	
+		level100() if window.game.currentLevel == 100 
+
+	# ALL LEVELS
 		@loopCounter += 1 # gameloop counter increments only when level is active
-		console.log("levelLoop is active. status =", window.game.status)
-		console.log("loopCounter =", @loopCounter)
+		# console.log("levelLoop is active. status =", window.game.status)
+		# console.log("loopCounter =", @loopCounter)
 		drawEverything()
 
+levelInitialize = (level) -> 
+	console.log("levelInitialize() runs for", level)
+	setSizes()
+			
+	if level == 100 
+		addGameControls()
+		@towers.push(new FireTower window.game.center.x, window.game.center.y)
+
+
+level100 = () -> 
+		endGame() if window.game.status == "endLevel"
+		console.log("level 100 is", window.game.status, "at loop", @loopCounter) if @loopCounter % 10 == 0
+
+
 endGame = () -> 
-	console.log("endGame runs")
+	console.log("endGame() runs")
 	drawEverything()
 	window.game.status = "paused"
 	@towers.pop(@towers.length) #emptys array while keeping alias
 	# clear @movers 
 	# clear @terrain 
+	removeGameControls()
 	addMenus()		
 		
 ############################################################
 # drawing functions 
 
 drawEverything = () ->
-	console.log("drawEverything runs")
-
+	# console.log("drawEverything runs")
 	# relocate center of screen 
-	_centerX = toGrid(window.game.canvas.width / 2)
-	_centerY = toGrid(window.game.canvas.height / 2)
-	window.game.center = 
-		x: _centerX
-		y: _centerY
-	
+	setSizes()
 	clearCanvas()
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
@@ -125,7 +181,7 @@ drawEverything = () ->
 	# draw movers
 
 drawOne = (thing) ->
-	console.log("drawOne runs for ", thing)
+	# console.log("drawOne runs for ", thing)
 	window.game.context.save()
 	window.game.context.translate(thing.posX, thing.posY)
 	window.game.context.rotate(thing.direction)
@@ -137,7 +193,7 @@ drawOne = (thing) ->
 	#restore context 
 
 drawCollection = (collection) -> 
-	console.log("drawCollection for", collection)
+	# console.log("drawCollection for", collection)
 	drawOne(thing) for thing in collection 
 
 clearCanvas = () -> 
@@ -190,6 +246,7 @@ jQuery ->
 		towers: []
 		movers: []
 		terrain: []
+		controlState: "start"
 		canvas: undefined
 		context: undefined
 
