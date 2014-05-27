@@ -8,3 +8,8 @@ Stretch goals
 - data viz with D3
 - fancy maps? 
 
+Current sprint: 
+- create a tower with a mouse click
+- position a tower with a mouse click 
+- exit click state
+

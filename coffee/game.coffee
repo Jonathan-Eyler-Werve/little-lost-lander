@@ -152,6 +152,8 @@ levelLoop = () ->
 		@loopCounter += 1 # gameloop counter increments only when level is active
 		# console.log("levelLoop is active. status =", window.game.status)
 		# console.log("loopCounter =", @loopCounter)
+
+		setCursorState(window.game.currentControl)
 		drawEverything()
 
 levelInitialize = (level) -> 
@@ -160,13 +162,13 @@ levelInitialize = (level) ->
 			
 	if level == 100 
 		addGameControls()
-		@towers.push(new FireTower window.game.center.x, window.game.center.y)
-
+		# draw terrain
+		# start wave timer
+			# create creeps 
 
 level100 = () -> 
 		endGame() if window.game.status == "endLevel"
 		console.log("level", 100, "is", window.game.status, "at loop", @loopCounter) if @loopCounter % (10 * FRAMERATE) == 0
-
 
 endGame = () -> 
 	console.log("endGame() runs")
@@ -178,6 +180,24 @@ endGame = () ->
 	removeGameControls()
 	addMenus()		
 		
+		
+############################################################
+# user input functions 
+
+setCursorState = (_control) -> # !runs during levelLoop 
+	if _control == "addBuilding" 
+
+		# do things to the cursor image
+
+		# bind to the click event 
+		$(window).click(placeTower("fireTower"))
+
+		# report data to the new tower function 
+
+placeTower = (towerType) -> 
+	
+
+
 ############################################################
 # drawing functions 
 
