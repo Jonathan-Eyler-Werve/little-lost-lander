@@ -6,7 +6,7 @@
 ############################################################
 # "global" constants
 
-FRAMERATE = 1 # frames per second 
+FRAMERATE = 10 # frames per second 
 INTERVAL = 1000 / FRAMERATE
 
 ############################################################
@@ -41,27 +41,29 @@ gameControlsCode =
 	</div>
 	"
 
-currentControlCode = (message) -> 
-	$('#menu').remove(".currentControl") if $(".currentControl").length > 0 
+currentControl = (message) -> 
+	$("#currentControl").remove() if $("#currentControl").length > 0 
 	return "<div id='currentControl' class='top-right-panel'> " + message + " </div>"	
 
 removeMenus = () -> 
-	console.log("removeMenus runs")
+	console.log("removeMenus() runs")
 	console.log("removeMenus warning: no #startMenu to remove") if $("#startMenu").length == 0 
 	$("#startMenu").remove() if $("#startMenu").length > 0
 
 addMenus = () -> 
-	console.log("addMenus runs")
+	console.log("addMenus() runs")
 	console.log("addMenus warning: #startMenu already exists") if $("#startMenu").length > 0 
 	if ($("#startMenu").length == 0)
 		$('#menu').append -> menuCode 
 		$('.menuLinkOne').on 'click' , -> 
+			console.log(".menuLinkOne click event")
 			runLevel(100)
 
 addGameControls = () ->				
 	console.log("addGameControls() runs")
 	console.log("addMenus warning: #gameControls already exists") if $("#gameControls").length > 0 
 	if ($("#gameControls").length == 0)
+		console.log("menu selector", $('#menu').length)
 		$('#menu').append -> gameControlsCode 
 		
 		$('.addBuilding').on 'click' , -> 
@@ -78,8 +80,9 @@ removeGameControls = () ->
 
 gameControls = (command) -> 
 	if command == "addBuilding"
-		console.log("Error: addBuilding function doesn't exist")
-		$('#menu').append -> currentControlCode("Place tower") 	
+		console.log("#top-right-panel grabbed as")
+		console.log($('#top-right-panel').length)
+		$('#top-right-panel').append -> currentControl("Place tower") 	
 
 	window.game.status = "endLevel"	if command == "endLevel"
 
@@ -154,7 +157,7 @@ levelInitialize = (level) ->
 
 level100 = () -> 
 		endGame() if window.game.status == "endLevel"
-		console.log("level 100 is", window.game.status, "at loop", @loopCounter) if @loopCounter % 10 == 0
+		console.log("level", 100, "is", window.game.status, "at loop", @loopCounter) if @loopCounter % (10 * FRAMERATE) == 0
 
 
 endGame = () -> 
@@ -259,7 +262,7 @@ jQuery ->
 	runTests()
 
 setAlias = () -> 
-	console.log("setAlias runs")
+	console.log("setAlias() runs")
 	@towers = window.game.towers 
 	@movers = window.game.movers 
 	@terrain = window.game.terrain
@@ -269,7 +272,6 @@ setAlias = () ->
 # tests
 
 runTests = () -> 
-	console.log("")
 	console.log("runTests() runs")
 	console.log("")
 
@@ -287,6 +289,11 @@ runTests = () ->
 	console.log(@loopCounter == 0, "loopCounter is reset to 0")
 	console.log("")
 	window.game.status = "start" #cleaning up test state
+
+	console.log("testing: selectors")
+	console.log(($('#menu').length > 0), "#menu")
+	console.log(($('#top-right-panel').length > 0), "#top-right-panel")
+	console.log("")
  
 
 	console.log("testing: endGame()")

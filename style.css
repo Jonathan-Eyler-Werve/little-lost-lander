@@ -20,5 +20,14 @@ body {
 
 .over-canvas {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
+}
+
+#top-right-panel {
+  position: fixed;
+  z-index: 900;
+  width: 200px;
+  right: 10px;
+  background-color: pink;
+  display: block;
 }
