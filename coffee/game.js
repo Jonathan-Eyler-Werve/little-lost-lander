@@ -115,12 +115,17 @@ drawEverything = function() {
     x: _centerX,
     y: _centerY
   };
-  clearCanvas(window.game.canvas);
+  clearCanvas();
   return drawCollection(towers);
 };
 
 drawOne = function(thing) {
-  return console.log("drawOne runs for ", thing);
+  console.log("drawOne runs for ", thing);
+  window.game.context.save();
+  window.game.context.translate(thing.posX, thing.posY);
+  window.game.context.rotate(thing.direction);
+  window.game.context.drawImage(thing.image, 0, 0);
+  return window.game.context.restore();
 };
 
 drawCollection = function(collection) {
@@ -152,13 +157,9 @@ Building = (function() {
   function Building(posX, posY) {
     this.posX = toGrid(posX);
     this.posY = toGrid(posY);
-    this.bornCycle = this.loopCounter;
+    this.bornCycle = window.game.loopCounter;
+    this.direction = 0;
   }
-
-  Building.prototype.drawTower = function() {
-    console.log("tower.drawTower is called");
-    return console.log("drawTower error: empty function");
-  };
 
   Building.prototype.rotate = function() {
     console.log("tower.rotate is called");

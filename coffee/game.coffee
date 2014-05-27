@@ -118,7 +118,7 @@ drawEverything = () ->
 		x: _centerX
 		y: _centerY
 	
-	clearCanvas(window.game.canvas)
+	clearCanvas()
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
 	drawCollection(towers)	
@@ -126,9 +126,11 @@ drawEverything = () ->
 
 drawOne = (thing) ->
 	console.log("drawOne runs for ", thing)
-
-
-
+	window.game.context.save()
+	window.game.context.translate(thing.posX, thing.posY)
+	window.game.context.rotate(thing.direction)
+	window.game.context.drawImage(thing.image,0,0)
+	window.game.context.restore()
 	#shift context to thing location 
 	#rotate conext to thing rotation
 	#draw object 
@@ -156,11 +158,8 @@ class Building
 	constructor: (posX, posY) ->		
 		this.posX = toGrid(posX)
 		this.posY = toGrid(posY)
-		this.bornCycle = @loopCounter
-
-	drawTower: -> 
-		console.log("tower.drawTower is called")
-		console.log("drawTower error: empty function")
+		this.bornCycle = window.game.loopCounter
+		this.direction = 0
 
 	rotate: ->
 		console.log("tower.rotate is called")
