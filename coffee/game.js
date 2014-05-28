@@ -177,6 +177,7 @@ level100 = function() {
 
 endGame = function() {
   console.log("endGame() runs");
+  setCurrentControl("none");
   drawEverything();
   window.game.status = "paused";
   this.towers.pop(this.towers.length);
@@ -186,11 +187,22 @@ endGame = function() {
 
 setCursorState = function(_control) {
   if (_control === "addBuilding") {
-    return $(window).click(placeTower("fireTower"));
+    return $(window).on('click', function() {
+      console.log("window click event (during addBuilding control state)");
+      placeTower(event, "fireTower");
+      window.game.currentControl = "none";
+      return $(window).unbind("click");
+    });
   }
 };
 
-placeTower = function(towerType) {};
+placeTower = function(event, towerType) {
+  var _posX, _posY;
+  console.log("placeTower() runs");
+  _posX = toGrid(event.pageX);
+  _posY = toGrid(event.pageY);
+  return console.log("placeTower positions...", _posX, _posY);
+};
 
 drawEverything = function() {
   setSizes();
@@ -260,6 +272,7 @@ FireTower = (function(_super) {
 })(Building);
 
 jQuery(function() {
+  console.clear;
   console.log("$ document ready");
   window.game = {
     loopCounter: 0,

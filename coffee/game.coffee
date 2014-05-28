@@ -172,6 +172,7 @@ level100 = () ->
 
 endGame = () -> 
 	console.log("endGame() runs")
+	setCurrentControl("none")
 	drawEverything()
 	window.game.status = "paused"
 	@towers.pop(@towers.length) #emptys array while keeping alias
@@ -190,12 +191,23 @@ setCursorState = (_control) -> # !runs during levelLoop
 		# do things to the cursor image
 
 		# bind to the click event 
-		$(window).click(placeTower("fireTower"))
 
-		# report data to the new tower function 
+		$(window).on 'click' , -> 
+			console.log("window click event (during addBuilding control state)")
+			placeTower(event, "fireTower")
+			window.game.currentControl = "none"
+			$(window).unbind( "click" );
 
-placeTower = (towerType) -> 
+placeTower = (event, towerType) -> 
+	console.log("placeTower() runs")
 	
+	_posX = toGrid(event.pageX)
+	_posY = toGrid(event.pageY)
+	console.log("placeTower positions...", _posX, _posY)
+	# create tower object at posx, posy
+
+
+
 
 
 ############################################################
@@ -269,6 +281,7 @@ class FireTower extends Building
 # start game on jQuery document.ready 
 
 jQuery -> 
+	console.clear 
 	console.log("$ document ready")
 	window.game = 
 		loopCounter: 0 
