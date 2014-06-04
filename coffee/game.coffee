@@ -42,6 +42,7 @@ gameControlsCode =
 	"
 
 setCurrentControl = (_control) -> 
+	console.log("setCurrentControl("+_control+") runs")
 	window.game.currentControl = _control 
 	$("#currentControl").remove() if $("#currentControl").length > 0 	
 	
@@ -186,15 +187,19 @@ endGame = () ->
 # user input functions 
 
 setCursorState = (_control) -> # !runs during levelLoop 
+	$(window).unbind()
+
 	if _control == "addBuilding" 
 
 		# do things to the cursor image
 
 		# bind to the click event 
+		console.log("window click is bound")
 
 		$(window).on 'click' , -> 
+			$(window)
 			console.log("window click event (during addBuilding control state)")
-			placeTower(event, "fireTower")
+			placeTower(event, "FireTower")
 			window.game.currentControl = "none"
 			$(window).unbind( "click" );
 
@@ -203,7 +208,18 @@ placeTower = (event, towerType) ->
 	
 	_posX = toGrid(event.pageX)
 	_posY = toGrid(event.pageY)
-	console.log("placeTower positions...", _posX, _posY)
+	console.log("placeTower at positions...", _posX, _posY)
+	setCursorState("none")
+	setCurrentControl("none")
+
+	@towers.push(new FireTower _posX, _posY)
+
+	# console.log(@towers)
+	return "foo"
+
+
+
+
 	# create tower object at posx, posy
 
 

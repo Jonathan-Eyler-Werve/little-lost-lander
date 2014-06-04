@@ -24,6 +24,7 @@
 
   setCurrentControl = function(_control) {
     var _currentControlCode, _message;
+    console.log("setCurrentControl(" + _control + ") runs");
     window.game.currentControl = _control;
     if ($("#currentControl").length > 0) {
       $("#currentControl").remove();
@@ -187,10 +188,13 @@
   };
 
   setCursorState = function(_control) {
+    $(window).unbind();
     if (_control === "addBuilding") {
+      console.log("window click is bound");
       return $(window).on('click', function() {
+        $(window);
         console.log("window click event (during addBuilding control state)");
-        placeTower(event, "fireTower");
+        placeTower(event, "FireTower");
         window.game.currentControl = "none";
         return $(window).unbind("click");
       });
@@ -202,7 +206,11 @@
     console.log("placeTower() runs");
     _posX = toGrid(event.pageX);
     _posY = toGrid(event.pageY);
-    return console.log("placeTower positions...", _posX, _posY);
+    console.log("placeTower at positions...", _posX, _posY);
+    setCursorState("none");
+    setCurrentControl("none");
+    this.towers.push(new FireTower(_posX, _posY));
+    return "foo";
   };
 
   drawEverything = function() {
