@@ -16,11 +16,11 @@ INTERVAL = 1000 / FRAMERATE
 imgBase = new Image 50, 50 
 imgBase.src = "images/icon_18231.svg"
 
-window.game = 
-	towers: []
-	movers: []
-	terrain: []
+
+
 # movers
+
+
 # terrain
 
 ############################################################
@@ -194,8 +194,8 @@ setCursorState = (_control) -> # !runs during levelLoop
 		# do things to the cursor image
 
 		# bind to the click event 
-		console.log("window click is bound")
 
+		# console.log("window click is bound")
 		$(window).on 'click' , -> 
 			$(window)
 			console.log("window click event (during addBuilding control state)")
@@ -232,7 +232,7 @@ placeTower = (event, towerType) ->
 drawEverything = () ->
 	# console.log("drawEverything runs")
 	# relocate center of screen 
-	setSizes()
+	# setSizes()
 	clearCanvas()
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
@@ -244,7 +244,7 @@ drawOne = (thing) ->
 	window.game.context.save()
 	window.game.context.translate(thing.posX, thing.posY)
 	window.game.context.rotate(thing.direction)
-	window.game.context.drawImage(thing.image,0,0)
+	window.game.context.drawImage(thing.image,0,0, thing.width, thing.height)
 	window.game.context.restore()
 	#shift context to thing location 
 	#rotate conext to thing rotation
@@ -260,7 +260,8 @@ clearCanvas = () ->
 	window.game.context.fillStyle = "rgba(0, 255, 0, 1)";       
 
 toGrid = (location) -> 
-	Math.floor(location / 50) * 50  
+
+	return (Math.floor(location / 50) * 50)
 	
 generateTerrain = () ->
 	console.log("generateTerrain runs")
@@ -275,6 +276,14 @@ class Building
 		this.posY = toGrid(posY)
 		this.bornCycle = window.game.loopCounter
 		this.direction = 0
+		this.range = 100
+		this.damage = 10 
+
+	attack: -> 
+		console.log("flameGun() runs")
+		# find a target
+		# am i in range? 
+		# fire the cannon! 
 
 	rotate: ->
 		console.log("tower.rotate is called")
@@ -283,18 +292,48 @@ class Building
 class FireTower extends Building
 	constructor: (posX, posY) ->
 		this.image = imgBase 
+		this.height = 50
+		this.width = 50
 		super posX, posY
 
-# drawTower = (ctx) -> 
-# 	ctx.save()
-# 	ctx.translate(this.posX, this.posY)
-# 	ctx.drawImage(this.image,-50,-50);
-# 	ctx.restore
+############################################################	
+#creeps 
 
+class Mover 
+	constructor: (posX, posY) ->		
+		this.posX = toGrid(posX)
+		this.posY = toGrid(posY)
+		this.bornCycle = window.game.loopCounter
+		this.direction = 0
+		this.hitpoints = 100
+		this.damage = 0 
+
+	attack: -> 
+		console.log("Mover.attack() runs")
+		console.log("attack error: empty function")
+		# find a target
+		# am i in range? 
+		# fire the cannon! 
+
+	rotate: ->
+		console.log("Mover.rotate() is called")
+		console.log("rotate error: empty function")
+
+class Slug extends Mover
+	constructor: (posX, posY) ->
+		this.image = imgSlug
+		this.height = 10
+		this.width = 10
+		super posX, posY
 
 
 ############################################################
 # start game on jQuery document.ready 
+
+window.game = 
+	towers: []
+	movers: []
+	terrain: []
 
 jQuery -> 
 	console.clear 
@@ -409,6 +448,13 @@ runTests = () ->
 	console.log(fireTest.image == imgBase)
 	console.log(fireTest.posX == 50)
 	console.log(fireTest.posY == 0)
+	console.log("")
+
+	console.log("testing: class Slug")
+	slugTest = new Slug 51, 1 
+	console.log(slugTest.image == imgSlug)
+	console.log(slugTest.posX == 50)
+	console.log(slugTest.posY == 0)
 	console.log("")
 
 	console.log("testing: selectors")

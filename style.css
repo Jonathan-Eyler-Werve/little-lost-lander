@@ -12,6 +12,7 @@ body {
   background-repeat: repeat;
   z-index: 0;
   position: fixed;
+  /*background-position: -25px -25px; */
 }
 
 #menu {
