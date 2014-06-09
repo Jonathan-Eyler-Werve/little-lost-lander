@@ -16,10 +16,9 @@ INTERVAL = 1000 / FRAMERATE
 imgBase = new Image 50, 50 
 imgBase.src = "images/icon_18231.svg"
 
-
-
 # movers
-
+imgSlug = new Image 50, 50
+imgSlug.src = "" #Slug designed by Joe Banner from the Noun Project (CC BY) 
 
 # terrain
 
