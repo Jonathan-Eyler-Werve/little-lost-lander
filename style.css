@@ -4,14 +4,31 @@ body {
   margin: 0;
 }
 
+
+
 #canvas { 
   /*border: 1px solid green;  */
   background-image: url('images/50px-grid.gif');
   background-repeat: repeat;
   z-index: 0;
   position: fixed;
+  /*background-position: -25px -25px; */
 }
 
 #menu {
 
+}
+
+.over-canvas {
+  position: fixed;
+  z-index: 1000;
+}
+
+#top-right-panel {
+  position: fixed;
+  z-index: 900;
+  width: 200px;
+  right: 10px;
+  background-color: pink;
+  display: block;
 }
