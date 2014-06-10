@@ -9,6 +9,11 @@
 FRAMERATE = 10 # frames per second 
 INTERVAL = 1000 / FRAMERATE
 
+window.game = 
+	towers: []
+	movers: []
+	# terrains: []
+
 ############################################################
 # image paths 
 
@@ -92,7 +97,8 @@ gameControls = (command) ->
 		# other things that happen because we are in window.game.currentControl == "addBuiding"
 		# possible state toggle of the button UI (ie, cancel currentControl)
 
-	window.game.status = "endLevel"	if command == "endLevel"
+	if command == "endLevel"	
+		window.game.status = "endLevel"	
 
 
 ############################################################
@@ -175,9 +181,9 @@ endGame = () ->
 	setCurrentControl("none")
 	drawEverything()
 	window.game.status = "paused"
-	@towers.pop(@towers.length) #emptys array while keeping alias
-	# clear @movers 
-	# clear @terrain 
+	@towers.pop() until @towers.length == 0  #emptys array while keeping alias
+	@movers.pop() until @movers.length == 0
+	# @terrains.pop() until @terrain.length == 0 
 	removeGameControls()
 	addMenus()		
 		
@@ -329,11 +335,6 @@ class Slug extends Mover
 ############################################################
 # start game on jQuery document.ready 
 
-window.game = 
-	towers: []
-	movers: []
-	terrain: []
-
 jQuery -> 
 	console.clear 
 	console.log("$ document ready")
@@ -386,10 +387,11 @@ runTests = () ->
 	window.game.status = "start" #cleaning up test state
 
 	console.log("testing: endGame()")
-	# window.game.towers.push("foo")
 	endGame()
 	console.log($("#startMenu").length > 0, "endGame restores menus")
-	console.log(@towers[@towers.length - 1] != "foo", "endGame clears towers")
+	console.log(@towers.length == 0, "endGame clears towers")
+	console.log(@movers.length == 0, "endGame clears movers")
+	# console.log(@terrains.length == 0, "endGame clears terrains")
 	console.log("")
 	window.game.status = "start" #cleaning up test state
 

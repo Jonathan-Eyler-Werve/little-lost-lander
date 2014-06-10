@@ -7,6 +7,11 @@ FRAMERATE = 10;
 
 INTERVAL = 1000 / FRAMERATE;
 
+window.game = {
+  towers: [],
+  movers: []
+};
+
 imgBase = new Image(50, 50);
 
 imgBase.src = "images/icon_18231.svg";
@@ -179,7 +184,12 @@ endGame = function() {
   setCurrentControl("none");
   drawEverything();
   window.game.status = "paused";
-  this.towers.pop(this.towers.length);
+  while (this.towers.length !== 0) {
+    this.towers.pop();
+  }
+  while (this.movers.length !== 0) {
+    this.movers.pop();
+  }
   removeGameControls();
   return addMenus();
 };
@@ -321,12 +331,6 @@ Slug = (function(_super) {
 
 })(Mover);
 
-window.game = {
-  towers: [],
-  movers: [],
-  terrain: []
-};
-
 jQuery(function() {
   console.clear;
   console.log("$ document ready");
@@ -377,7 +381,8 @@ runTests = function() {
   console.log("testing: endGame()");
   endGame();
   console.log($("#startMenu").length > 0, "endGame restores menus");
-  console.log(this.towers[this.towers.length - 1] !== "foo", "endGame clears towers");
+  console.log(this.towers.length === 0, "endGame clears towers");
+  console.log(this.movers.length === 0, "endGame clears movers");
   console.log("");
   window.game.status = "start";
   console.log("testing: setAlias");
