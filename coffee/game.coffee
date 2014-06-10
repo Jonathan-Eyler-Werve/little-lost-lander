@@ -176,6 +176,11 @@ level100 = () ->
 		endGame() if window.game.status == "endLevel"
 		console.log("level", 100, "is", window.game.status, "at loop", @loopCounter) if @loopCounter % (10 * FRAMERATE) == 0
 
+		# Level 100 movers 
+		if @loopCounter % 100 == 0
+			console.log("Slug creation event!") 
+			@movers.push(new Slug 200, 200)
+
 endGame = () -> 
 	console.log("endGame() runs")
 	setCurrentControl("none")
@@ -210,7 +215,6 @@ setCursorState = (_control) -> # !runs during levelLoop
 
 placeTower = (event, towerType) -> 
 	console.log("placeTower() runs")
-	
 	_posX = toGrid(event.pageX)
 	_posY = toGrid(event.pageY)
 	console.log("placeTower at positions...", _posX, _posY)
@@ -241,8 +245,8 @@ drawEverything = () ->
 	clearCanvas()
 	# draw terrain <- collections, bottom layer up
 	# draw bullets 
-	drawCollection(towers)	
-	# draw movers
+	drawCollection(towers)
+	drawCollection(movers)	
 
 drawOne = (thing) ->
 	# console.log("drawOne runs for ", thing)
@@ -275,7 +279,7 @@ generateTerrain = () ->
 ############################################################	
 #towers 
 
-class Building 
+class Tower 
 	constructor: (posX, posY) ->		
 		this.posX = toGrid(posX)
 		this.posY = toGrid(posY)
@@ -294,7 +298,7 @@ class Building
 		console.log("tower.rotate is called")
 		console.log("rotate error: empty function")
 
-class FireTower extends Building
+class FireTower extends Tower
 	constructor: (posX, posY) ->
 		this.image = imgBase 
 		this.height = 50
@@ -302,7 +306,7 @@ class FireTower extends Building
 		super posX, posY
 
 ############################################################	
-#creeps 
+#movers 
 
 class Mover 
 	constructor: (posX, posY) ->		
