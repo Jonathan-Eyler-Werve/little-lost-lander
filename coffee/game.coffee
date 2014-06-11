@@ -331,8 +331,8 @@ class Mover
 class Slug extends Mover
 	constructor: (posX, posY) ->
 		this.image = imgSlug
-		this.height = 10
-		this.width = 10
+		this.height = 25
+		this.width = 25
 		super posX, posY
 
 
@@ -476,3 +476,5 @@ runTests = () ->
 	setCurrentControl("start")
 	console.log(window.game.currentControl == "start")
 	console.log("")
+
+j12coder 

@@ -328,8 +328,8 @@
 
     function Slug(posX, posY) {
       this.image = imgSlug;
-      this.height = 10;
-      this.width = 10;
+      this.height = 25;
+      this.width = 25;
       Slug.__super__.constructor.call(this, posX, posY);
     }
 
@@ -460,5 +460,7 @@
     console.log(window.game.currentControl === "start");
     return console.log("");
   };
+
+  j12coder;
 
 }).call(this);
