@@ -12,11 +12,13 @@ function toDegrees(radians){
 
 function toI(number){
 	return Math.round(number)
-}
+};
 
-function updateRandom(collection, propertyNameAsString)
-	console.log("Updating random factors for collection", collection, "on property", propertyNameAsString)
+function updateRandom(collection, propertyNameAsString){
+	// console.log("Updating random factors for collection", collection, "on property", propertyNameAsString)
 	for (var i = 0; i < collection.length; i++) {
     if (collection[i] != undefined) {
       collection[i][propertyNameAsString] = toI( (Math.random() * 10) + 1 );
-   };  
+    };
+  }; 
+};   
